@@ -1,0 +1,26 @@
+{% load static %}<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  {% include 'global/partials/_head.html' %}
+</head>
+<body>
+  {% block header %}
+    {% include 'global/partials/_header.html' %}
+  {% endblock %}
+  {% include 'global/partials/_messages.html' %}
+
+
+  <main class="content">
+    {% block content %}{% endblock content %}
+    {% include 'global/partials/_pagination.html' %}
+  </main>
+
+<footer class="site-footer">
+    <p>Powered by <strong>E-Commerce Matriz</strong></p>
+</footer>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<script src="{% static 'global/js/script.js' %}"></script>
+
+</body>
+</html>

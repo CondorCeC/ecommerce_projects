@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Template de E-mail</title>
+  </head>
+    <body>
+        <h1>Insucesso na entrega!</h1>
+        <p><b>Loja:</b> {{loja}}</p>
+        <p><b>Motorista:</b> {{owner}}</p>
+        <p><b>Horário Tentativa:</b> {{formatted_hr_ins}}</p>
+        <p><b>Endereço Tentativa:</b> {{end_ins}}</p>
+        <p><b>Observação do motorista:</b> {{obs_ent}}</p>
+        <h2>Informações do Cliente</h2>
+        <p><b>Nome:</b> {{cliente_nome}}</p>
+        <p><b>Telefone:</b> <a href="https://api.whatsapp.com/send?phone={{cliente_tel}}" target="_blank">{{cliente_tel}}</a></p>
+        <p><b>Pedido:</b> {{pedido}}</p>
+          <em>
+            Atenciosamente,
+            <br />
+            E-Commerce Matriz.
+          </em>
+    </body>
+</html>

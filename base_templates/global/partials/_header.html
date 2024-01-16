@@ -1,0 +1,74 @@
+{% load static %}
+<header class="header">
+        <h1 class="">
+      <a href="{% url  'contact:index' %}">
+        <img class="" src="{% static 'global/img/logo.png' %}" width="250">  
+      </a>
+       <button class="menu-toggle">☰</button>
+        <script>
+        document.addEventListener('click', function(event) {
+            const isMenuOpen = document.body.classList.contains('menu-open');
+            const isInsideMenu = document.querySelector('.menu').contains(event.target);
+            const isMenuToggle = document.querySelector('.menu-toggle').contains(event.target);
+            if (isMenuOpen && !isInsideMenu && !isMenuToggle) {
+                document.body.classList.remove('menu-open');
+            }
+        });
+        document.querySelector('.menu-toggle').addEventListener('click', function() {
+            document.body.classList.toggle('menu-open');
+        });
+        </script>
+    </h1>
+    <nav class="menu">
+      <ul class="menu-list">
+    {% load static %}  
+  {% if user.is_authenticated %}
+ 
+        {% if request.user.is_superuser %}
+          <li class="menu-item">
+            <a href="{% url 'contact:create' %}" class="menu-link">Novo Sac</a>
+          </li>
+          <li class="menu-item">
+            <a href="http://127.0.0.1:8000/admin" class="menu-link" target="_blank">Painel Administrativo</a>
+          </li><br>
+          {% comment %} <li class="menu-item">
+            <a href="http://127.0.0.1:8000/entrega" class="menu-link" target="_blank">Entregas - Frota</a>
+          </li> {% endcomment %}
+          <li class="menu-item">
+            <a href="{% url 'contact:user_update' %}" class="menu-link">Olá, {{ user.username }}</a>
+          </li>
+          <li class="menu-item">
+            <a href="{% url 'contact:logout' %}" class="menu-link">Logout</a>
+          </li>
+        {% else %}
+          <li class="menu-item">
+            <a href="{% url 'contact:create' %}" class="menu-link">Novo Sac</a>
+          </li>
+          <li class="menu-item">
+            <a href="{% url 'contact:user_update' %}" class="menu-link">Olá, {{ user.username }}</a>
+          </li>
+          <li class="menu-item">
+            <a href="{% url 'contact:logout' %}" class="menu-link">Logout</a>
+          </li>
+        {% endif %}
+  {% else %}
+        <li class="menu-item">
+          <a href="{% url 'contact:login' %}" class="menu-link">Login</a>
+        </li>      
+        <li class="menu-item">
+          <a href="{% url 'contact:register' %}" class="menu-link">Novo Usuário</a>
+        </li>      
+  {% endif %}
+    </ul>
+
+    </nav>
+    <div class="search">
+
+      <form action="{% url 'contact:search' %}" method="GET">
+        <input type="search" class="search-input" placeholder="Buscar um SAC..." id="search" name="q" value="{{ request.GET.q.strip }}">
+
+      </form>
+      
+    </div>
+    
+  </header>

@@ -1,0 +1,50 @@
+{% extends 'global/base.html' %}
+{% load static %}
+
+{% block content %} 
+
+    <div class="box">   
+        <form method="post" enctype="multipart/form-data" name="pesquisa" id="pesquisa">{% csrf_token %}
+            <input type="hidden" name="email" id="email" class="inputUser" placeholder="Digite seu E-Mail">
+            
+            <fieldset>
+                <legend><b>Pesquisa de Satisfação</b></legend>
+            
+               <p><b>Como avalia a experiência da sua compra online?</b></p>
+                Selecione abaixo:</p>
+               <label>
+                <input type="radio" name="rating" value="5" onclick="showInfo('excelente')">5 - Excelente
+                </label><br>
+                <label>
+                <input type="radio" name="rating" value="4" onclick="showInfo('bom')">4 - Bom
+                </label><br>
+                <label>
+                <input type="radio" name="rating" value="3" onclick="showInfo('okay')">3 - Razoável
+                </label><br>
+                <label>
+                <input type="radio" name="rating" value="2" onclick="showInfo('ruim')">2 - Ruim
+                </label><br>
+                <label>
+                <input type="radio" name="rating" value="1" onclick="showInfo('pessimo')">1 - Péssimo
+                </label><br>
+                <br>
+                
+              
+                <div id="info"></div>
+                <br>
+                  <label for="indicacao"><b>Você indicaria nosso serviço para um amigo?</b></label>
+                      <select id="indicacao" name="indicacao">
+                        <option value="null">-----</option>
+                        <option value="sim">Sim</option>
+                        <option value="nao">Não</option>
+                      </select><br><br>
+                      
+                      {% comment %} <p>Caso tenha alguma observação ou reclamação, clique <a href="https://www.condoremcasa.com.br/my-account/tickets" target="_blank">aqui</a> para abrir um ticket que entraremos em contato com você.</p> {% endcomment %}
+                <input type="submit" name="submit" id="submit">
+            </fieldset>
+        </form>
+    </div>
+  
+  <script src="{% static 'global/js/script_pesquisa.js' %}"></script>
+
+{% endblock content %}     

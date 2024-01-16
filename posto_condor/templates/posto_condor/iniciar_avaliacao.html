@@ -1,0 +1,23 @@
+{% extends 'global/base_posto.html' %}
+
+{% block content %}
+
+<h2>Cargos disponíveis para avaliação:</h2>
+
+<div class="user-list">
+    {% if error_message %}
+    <p>{{ error_message }}</p>
+    {% else %}
+    {% for cargo in cargos %}<br>
+        <a href="{% url 'posto:listar_usuarios' cargo %}">
+            <div class="ava-card">
+              <i class="fas fa-gas-pump"></i> {{ cargo }}  
+            </div>
+        </a>
+    {% endfor %}
+   
+    {% endif %}
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,136 @@
+{% extends 'global/base_sacs.html' %}
+{% block header %}
+    {% include 'global/partials/_header_frota.html' %}
+{% endblock %}
+{% block content %}
+{% load static %}
+{% if page_obj %}
+<h1 align="center">Entregas disponíveis</h1> <br>
+
+
+<form id="contactSelectionForm" method="GET" action="{% url 'entrega:index_entrega' %}">
+  <div align="center">
+    Início: <input type="date" name="start_date" id="start_date" onchange="this.form.submit()" 
+           value="{{ request.GET.start_date|default:'' }}">
+    Fim: <input type="date" name="end_date" id="end_date" onchange="this.form.submit()" 
+           value="{{ request.GET.end_date|default:'' }}">
+  </div>
+    <script>
+        if (!document.getElementById("start_date").value) {
+            let startDate = new Date();
+            startDate.setDate(startDate.getDate() - 3);
+            document.getElementById("start_date").valueAsDate = startDate;
+        }
+
+        if (!document.getElementById("end_date").value) {
+            let endDate = new Date();
+            endDate.setDate(endDate.getDate() + 2);
+            document.getElementById("end_date").valueAsDate = endDate;
+        }
+    </script>
+</form>
+
+
+  <div class="cards-container">
+    
+  <form id="contactSelectionForm" method="GET" action="{% url 'entrega:update_entrega_status' %}">{% csrf_token %}
+    
+      
+
+        <div style="margin-bottom: 20px; display: flex; align-items: center;">
+          <input type="checkbox" id="selectAllCheckbox" style="margin-right: 10px;"/>
+          <label for="selectAllCheckbox" style="font-weight: bold; font-size: 1.1em;">Selecionar tudo</label>
+        </div>
+          {% for entrega in page_obj %}
+
+          
+      <div class="card">
+      
+
+      {% if entrega.status == 'Emitido' %}
+      <div class="blurred">
+      <div class="card-header_emi">
+          {{ entrega.numero_pedido }}
+      </div>
+       <div class="card-body">
+        <p><strong>ID:</strong> {{ entrega.id }}</p>
+        <p><strong>Status:</strong> {{ entrega.get_status_display }}</p>
+        <p><strong>Data Entrega:</strong> {{ entrega.data_ent|date:"d/m/Y"}}</p>
+        <p><strong>Janela:</strong> {{ entrega.janela }}</p>
+        <p><strong>Endereço:</strong> {{ entrega.endereco }}</p>
+        <p><strong>Bairro:</strong> {{ entrega.bairro }}</p>
+        <p><strong>Loja:</strong> {{ entrega.group }}</p>
+      </div>
+      </div>
+      </div>
+      {% else %}
+      {% comment %} {% for entrega in page_obj|dictsort:"data_ent" %} {% endcomment %}
+      <div class="card-header_index">
+          {{ entrega.numero_pedido }}
+        <input type="checkbox" name="selected_contacts" value="{{ entrega.id }}" />
+      </div>
+      
+      <div class="card-body">
+        <p><strong>ID:</strong> {{ entrega.id }}</p>
+        <p><strong>Status:</strong> {{ entrega.get_status_display }}</p>
+        <p><strong>Data Entrega:</strong> {{ entrega.data_ent|date:"d/m/Y"}}</p>
+        <p><strong>Janela:</strong> {{ entrega.janela }}</p>
+        <p><strong>Endereço:</strong> {{ entrega.endereco }}</p>
+        <p><strong>Bairro:</strong> {{ entrega.bairro }}</p>
+        <p><strong>Loja:</strong> {{ entrega.group }}</p>
+        
+        {% if entrega.insucessos.all %}
+        <p><strong>Tentativas:</strong></p><br> 
+            
+            {% for insucesso in entrega.insucessos.all|dictsortreversed:"hora_ins" %}
+                em {{ insucesso.hora_ins|date:"d/m/Y"}}
+                às {{ insucesso.hora_ins|time:"H:i" }}<br>
+            {% endfor %}
+            
+          </p>
+           
+          {% endif %}
+          
+      </div>
+      {% comment %} {% endfor %} {% endcomment %}
+    </div> 
+       
+    {% endif %} 
+            {% endfor %}
+     <div style="width: 100%; text-align: center; margin-top: 2rem;">
+        <button type="submit" class="btn btn-link btn-select_ent" align="center">Selecionar Entregas!</button>
+      </div>
+    </form>
+  </div>
+  <script src="{% static 'global/js/script.js' %}"></script>
+
+{% else %}
+<form id="contactSelectionForm" method="GET" action="{% url 'entrega:index_entrega' %}">
+    Início: <input type="date" name="start_date" id="start_date" onchange="this.form.submit()" 
+           value="{{ request.GET.start_date|default:'' }}">
+    Fim: <input type="date" name="end_date" id="end_date" onchange="this.form.submit()" 
+           value="{{ request.GET.end_date|default:'' }}">
+
+    <script>
+        if (!document.getElementById("start_date").value) {
+            let startDate = new Date();
+            startDate.setDate(startDate.getDate() - 3);
+            document.getElementById("start_date").valueAsDate = startDate;
+        }
+
+        if (!document.getElementById("end_date").value) {
+            let endDate = new Date();
+            endDate.setDate(endDate.getDate() + 2);
+            document.getElementById("end_date").valueAsDate = endDate;
+        }
+    </script>
+</form>
+  <div class="single-contact">
+    <h1 class="single-contact-name">
+      Nenhuma Entrega no momento. <a href="" class="btn btn-link btn-back">Voltar</a>
+    </h1>
+  </div>
+
+{% endif %}
+
+{% endblock content %}

@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+{% load static %}
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+
+    <link rel="icon" href="{% static 'global/img/favicon.ico' %}" type="image/x-icon">
+    <link rel="stylesheet" href="{% static 'global/css/style_pesquisa.css' %}">
+    <title>Condor em Casa</title>
+</head>
+<body>
+    <div class="logo-container">
+    <img src="{% static 'global/img/logo.png' %}" alt="Logo Condor">
+    
+    </div>
+    {% block content %}{% endblock content %}
+</body>
+</html>

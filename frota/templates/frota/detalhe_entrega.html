@@ -1,0 +1,130 @@
+{% extends 'global/base_sacs.html' %}
+{% load static %}
+{% block header %}
+    {% include 'global/partials/_header_frota.html' %}
+{% endblock %}
+{% block content %}
+    <div class="single-contact">    
+        <div class="contact-links">
+            <a href="{% url 'entrega:selected_entregas' %}" class="btn btn-link btn-back2">
+                <i class="fas fa-arrow-left"></i>
+            </a>
+        </div>
+        <p><b>ID:</b> {{ entrega.id }} </p> 
+        <p><b>Cliente:</b> {{ entrega.first_name }}</p>
+        <p><b>Pedido:</b> <a href="https://smr.sitemercado.com.br/pedido/{{ entrega.numero_pedido }}" target="_blank">{{ entrega.numero_pedido }}</a> </p>
+        <p><b>E-Mail:</b> {{ entrega.email }} </p>
+        <p><b>Telefone:</b> <a href="https://api.whatsapp.com/send?phone={{ entrega.phone }}&text=Olá, sou do condor em casa e preciso fazer algumas confirmações sobre o pedido {{entrega.numero_pedido}} " target="_blank">{{ entrega.phone }}</a></p>
+        <p><b>Data Criação:</b> {{ entrega.created_date }} </p>
+        <p><b>Descrição:</b> {{ entrega.description }} </p>
+        <p><b>Categoria:</b> {{ entrega.category.name }} </p>
+        <p><b>Loja:</b> {{ entrega.group }} </p>
+        <p><b>Endereco:</b> <a href="https://www.google.com/maps/dir/?api=1&destination={{ entrega.endereco|urlencode }}" target="_blank">{{ entrega.endereco }}</a><br></p>
+<div class="contact-links">
+{% if entrega.status == 'Concluído' %}
+    <form action="" method="post"> {% csrf_token %}
+        <button class="btn btn-link btn-completed" disabled>Concluído</button>
+    </form>
+{% else %} 
+
+
+<form method="post" enctype="multipart/form-data" action="{% url 'entrega:finalizar_entrega' entrega.id %}">{% csrf_token %}
+<input type="hidden" id="final_lat" name="final_lat" value="">
+<input type="hidden" id="final_lng" name="final_lng" value="">
+    <div class="modal-footer">
+        <button class="btn btn-link btn-completed" type="submit"onclick="confirmEntrega(event)">Finalizar Entrega</button>
+    </div>
+    <div class="modal-backdrop" onclick="closeModal2()"></div>
+        <div class="modal" id="FinalizaModal">
+            <div class="modal-header">
+            <button class="modal-close" type="button" onclick="closeModal2(event)">&times;</button>
+
+            </div>
+                <div class="modal-body"><br>
+                    <div class="form-content form-group">
+                         <textarea placeholder="Observações entrega..." name="obs" id="observacao" cols="2" rows="5" required></textarea>
+                    </div> 
+                   <input type="file" name="picture" id="fileInput" required><br><br> 
+                     <label for="fileInput" class="custom-file-upload2">Carregar Canhoto</label><br><br>
+                    <span id="fileName"></span> 
+                   <script>
+                    document.getElementById('fileInput').addEventListener('change', function(e) {
+                        var fileName = e.target.files[0].name;
+                        var label = document.querySelector('label[for="fileInput"]');
+                        label.textContent = "Arquivo selecionado: " + fileName;
+                        });
+                    </script>
+
+                    {% if entrega.pagamento == 'Online' %}
+                    <span class="blinking-text">Lembre-se de solicitar a assinatura do canhoto!</span>
+                    {% endif %}
+                </div><br>
+                <div class="modal-footer">
+          <button type="submit" class="modal-button">Carregar canhoto e Finalizar</button>
+
+                </div>
+               
+    </div>
+            <div class="modal-body">
+                {{ form.picture.url }}
+            </div>
+    <script src="{% static 'global/js/script.js' %}"></script>
+</form>
+
+{% endif %} 
+
+
+<form method="post" enctype="multipart/form-data" action="{% url 'entrega:insucesso' entrega.id %}">
+    {% csrf_token %}
+    <input type="hidden" name="action_type" id="actionTypeInput" value="">
+    <input type="hidden" id="final_lat2" name="final_lat2" value="">
+    <input type="hidden" id="final_lng2" name="final_lng2" value="">
+    
+    <div class="modal-footer">
+        <button class="btn btn-link btn-insucesso" onclick="showInsucessoModal()">Reportar Insucesso</button>
+    </div>
+    
+    <div class="modal-backdrop" style="display:none;" onclick="closeModal()"></div>
+    
+    <div class="modal" id="insucessoModal" style="display:none;">
+        <div class="modal-header">
+            <button class="modal-close" type="button" onclick="closeModal()">&times;</button>
+        </div>
+        <div class="form-content form-group">
+            <select name="obs_insucesso" id="obs_insucesso" required>
+                <option value="">Selecione uma opção</option>
+                <option value="Cliente não estava">Cliente não estava</option>
+                <option value="Cliente recusou o pedido">Cliente recusou o pedido</option>
+                <option value="Endereço incorreto">Endereço incorreto</option>
+                <option value="Não encontrei o endereço">Não encontrei o endereço</option>
+                <option value="Problema no carro">Problema no carro</option>
+                <option value="Problema no pagamento">Problema no pagamento</option>
+                <option value="Problema no POS">Problema no POS</option>
+                <option value="Faltou frios">Faltou frios</option>
+                <option value="Faltou produtos">Problema no pagamento</option>
+                <option value="Cliente se recusou a assinar o canhoto de entrega">Cliente se recusou a assinar o canhoto de entrega</option>
+            </select>
+        </div>
+        <div>
+            <input type="file" name="img_insucesso" id="failedPictureInput" required>
+            <label for="failedPictureInput" class="custom-file-upload3">Carregar imagem</label>
+        </div>
+        <div class="modal-body"><br>
+            <div class="modal-footer">
+                <button type="submit" class="modal-button" onclick="submitInsucessoForm('insucesso')">Insucesso</button>
+                <button type="submit" class="modal-button" onclick="submitInsucessoForm('devolver')">Devolver para Loja</button>
+            </div>
+        </div>
+    </div>
+     
+<script src="{% static 'global/js/script.js' %}"></script>
+</form>
+</div>  <br><br> 
+<h3>Logs:</h3>
+<ul>
+{% for log in entrega.entregalog_set.all|dictsortreversed:"timestamp" %}
+    <li><strong>{{ log.user }}:</strong> {{ log.action }} em {{ log.timestamp }}</li>
+{% endfor %}
+
+</ul> 
+{% endblock content %}

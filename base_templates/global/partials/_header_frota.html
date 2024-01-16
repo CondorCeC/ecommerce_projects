@@ -1,0 +1,86 @@
+{% load static %}
+<header class="header">
+  <h1 class="">
+    <a href="{% url  'entrega:index_entrega' %}">
+      <img class="" src="{% static 'global/img/logo.png' %}" width="250">  
+    </a>
+  <button class="menu-toggle">☰</button>
+    <script>
+      document.addEventListener('click', function(event) {
+      const isMenuOpen = document.body.classList.contains('menu-open');
+      const isInsideMenu = document.querySelector('.menu').contains(event.target);
+      const isMenuToggle = document.querySelector('.menu-toggle').contains(event.target);
+      if (isMenuOpen && !isInsideMenu && !isMenuToggle) {
+        document.body.classList.remove('menu-open');
+      }
+      });
+      document.querySelector('.menu-toggle').addEventListener('click', function() {
+      document.body.classList.toggle('menu-open');
+      });
+    </script>
+  </h1>
+<nav class="menu">
+  <ul class="menu-list"> 
+    {% if user.is_authenticated %}
+      {% if request.user.is_superuser %}
+        <li class="menu-item">
+          <a href="{% url 'entrega:create_entrega' %}" class="menu-link">Nova Entrega</a>
+        </li>
+        <li class="menu-item">
+          <a href="{% url 'entrega:detalhamento' %}" class="menu-link">Entregas Finalizadas</a>
+        </li>
+        <li class="menu-item">
+          <a href="{% url 'entrega:selected_entregas' %}" class="menu-link">Entregas em Rota</a>
+        </li>
+        <li class="menu-item">
+          <a href="{% url 'entrega:index_entrega' %}" class="menu-link">Entregas Disponíveis</a>
+        </li>
+        <li class="menu-item">
+          <a href="{% url 'contact:user_update' %}" class="menu-link">Olá, {{ user.username }}</a>
+        </li>
+        <li class="menu-item">
+          <a href="{% url 'entrega:logout_entrega' %}" class="menu-link">Logout</a>
+        </li>
+      {% else %}
+        {% comment %} <li class="menu-item">
+          <a href="{% url 'entrega:create_entrega' %}" class="menu-link">Nova Entrega</a>
+        </li> {% endcomment %}
+        <li class="menu-item">
+          <a href="{% url 'entrega:detalhamento' %}" class="menu-link">Entregas Finalizadas</a>
+        </li>
+        <li class="menu-item">
+          <a href="{% url 'entrega:index_entrega' %}" class="menu-link">Entregas Disponíveis</a>
+        </li>
+        <li class="menu-item">
+          <a href="{% url 'entrega:selected_entregas' %}" class="menu-link">Entregas em Rota</a>
+        </li>
+        <li class="menu-item">
+          <a href="{% url 'contact:user_update' %}" class="menu-link">Olá, {{ user.username }}</a>
+        </li>
+        <li class="menu-item">
+          <a href="{% url 'entrega:logout_entrega' %}" class="menu-link">Logout</a>
+        </li>
+      {% endif %}
+{% else %}
+  <li class="menu-item">
+    <a href="{% url 'entrega:login_entrega' %}" class="menu-link">Login</a>
+  </li>      
+  {% comment %} <li class="menu-item">
+    <a href="{% url 'contact:register' %}" class="menu-link">Novo Usuário</a>
+  </li>       {% endcomment %}
+{% endif %}
+  </ul>
+
+</nav>
+<div class="search">
+    <form action="" method="GET">
+        <select name="loja" class="search-select" onchange="this.form.submit()">
+            <option value="" {% if not selected_loja %}selected{% endif %}>Selecionar uma loja...</option>
+            <option value="Todas" {% if selected_loja == "Todas" %}selected{% endif %}>Todas</option>
+            {% for group in user_groups %}
+                <option value="{{ group.name }}" {% if group.name == selected_loja %}selected{% endif %}>{{ group.name }}</option>
+            {% endfor %}
+        </select>
+    </form>
+</div>
+</header>

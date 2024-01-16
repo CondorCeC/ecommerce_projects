@@ -1,0 +1,67 @@
+{% load static %}
+<header class="header">
+    <h1 class="header-heading">
+      <a href="{% url  'contact:index' %}" class="header-link">
+        Condor em Casa
+      </a>
+       <button class="menu-toggle">☰</button>
+        <script>
+        document.querySelector('.menu-toggle').addEventListener('click', function() {
+    document.body.classList.toggle('menu-open');
+});
+
+        </script>
+    </h1>
+    <nav class="menu">
+    
+
+      <ul class="menu-list">
+     
+     
+  {% if user.is_authenticated %}
+ 
+        {% if request.user.is_superuser %}
+          <li class="menu-item">
+            <a href="{% url 'contact:create' %}" class="menu-link">Novo Sac</a>
+          </li>
+          <li class="menu-item">
+            <a href="https://pesquisa.cndr.me/admin/" class="menu-link" target="_blank">Painel Administrativo</a>
+          </li>
+          <li class="menu-item">
+            <a href="{% url 'contact:user_update' %}" class="menu-link">Olá, {{ user.username }}</a>
+          </li>
+          <li class="menu-item">
+            <a href="{% url 'contact:logout' %}" class="menu-link">Logout</a>
+          </li>
+        {% else %}
+          <li class="menu-item">
+            <a href="{% url 'contact:create' %}" class="menu-link">Novo Sac</a>
+          </li>
+          <li class="menu-item">
+            <a href="{% url 'contact:user_update' %}" class="menu-link">Olá, {{ user.username }}</a>
+          </li>
+          <li class="menu-item">
+            <a href="{% url 'contact:logout' %}" class="menu-link">Logout</a>
+          </li>
+        {% endif %}
+  {% else %}
+        <li class="menu-item">
+          <a href="{% url 'contact:login' %}" class="menu-link">Login</a>
+        </li>      
+        <li class="menu-item">
+          <a href="{% url 'contact:register' %}" class="menu-link">Novo Usuário</a>
+        </li>      
+  {% endif %}
+    </ul>
+
+    </nav>
+    <div class="search">
+
+      <form action="{% url 'contact:search' %}" method="GET">
+        <input type="search" class="search-input" placeholder="Search" id="search" name="q" value="{{ request.GET.q.strip }}">
+
+      </form>
+      
+    </div>
+   
+  </header>

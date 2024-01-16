@@ -1,0 +1,124 @@
+{% extends 'global/base_sacs.html' %}
+{% block header %}
+    {% include 'global/partials/_header_frota.html' %}
+{% endblock %}
+{% block content %}
+{% load static %}
+{% if page_obj %}
+
+<h1 align="center">Entregas em rota</h1> <br>
+{% comment %} <form id="contactSelectionForm" method="GET" action="{% url 'entrega:selected_entregas' %}">
+    <input type="date" name="data_ent" id="data_ent" onchange="this.form.submit()" 
+           value="{{ request.GET.data_ent|default:'' }}">
+    <script>
+        if (!document.getElementById("data_ent").value) {
+            document.getElementById("data_ent").valueAsDate = new Date();
+        }
+    </script>
+</form> {% endcomment %}
+<form id="contactSelectionForm" method="GET" action="{% url 'entrega:selected_entregas' %}">
+  <div align="center">
+    Início: <input type="date" name="start_date" id="start_date" onchange="this.form.submit()" 
+           value="{{ request.GET.start_date|default:'' }}">
+    Fim: <input type="date" name="end_date" id="end_date" onchange="this.form.submit()" 
+           value="{{ request.GET.end_date|default:'' }}">
+
+  </div>
+    <script>
+        if (!document.getElementById("start_date").value) {
+            let startDate = new Date();
+            startDate.setDate(startDate.getDate() - 3);
+            document.getElementById("start_date").valueAsDate = startDate;
+        }
+
+        if (!document.getElementById("end_date").value) {
+            let endDate = new Date();
+            endDate.setDate(endDate.getDate() + 2);
+            document.getElementById("end_date").valueAsDate = endDate;
+        }
+    </script>
+</form>
+<div class="cards-container">
+  <form id="contactSelectionForm" method="post" action="{% url 'entrega:rota' %}" target="_blank">
+    {% csrf_token %}
+    <input type="hidden" id="starting_point_lat" name="starting_point_lat" value="">
+    <input type="hidden" id="starting_point_lng" name="starting_point_lng" value="">
+    
+    <div style="margin-bottom: 20px; display: flex; align-items: center;">
+      <input type="checkbox" id="selectAllCheckbox" style="margin-right: 10px;"/>
+      <label for="selectAllCheckbox" style="font-weight: bold; font-size: 1.1em;">Selecionar tudo</label>
+    </div> 
+    {% for entrega in page_obj %}
+  <div class="card clickable-card {% if entrega.pagamento == 'Online' %}highlight-card{% endif %}" data-url="{% url 'entrega:entrega' entrega.id %}">
+      <input type="hidden" name="email_{{ entrega.id }}" value="{{ entrega.email }}">
+      <input type="hidden" name="pedido_{{ entrega.id }}" value="{{ entrega.numero_pedido }}">
+      <input type="hidden" name="nome_{{ entrega.id }}" value="{{ entrega.first_name }}">
+      <div class="card-header">
+        <input type="checkbox" class="" name="selected_ent" value="{{ entrega.id }}" />
+        <strong>{{ entrega.numero_pedido }}</strong>
+      </div>
+      <div class="card-body">
+        <p><strong>ID:</strong> {{ entrega.id }}</p>
+        <p><strong>Status:</strong> {{ entrega.get_status_display }} </p>
+        <p><strong>Data Entrega:</strong> {{ entrega.data_ent|date:"d/m/Y"}}</p>
+        <p><strong>Janela:</strong> {{ entrega.janela }}</p>
+<p><strong>Endereço:</strong> <a href="https://www.google.com/maps/dir/?api=1&destination={{ entrega.endereco|urlencode }}" target="_blank">{{ entrega.endereco }}</a></span></p>
+        <p><strong>Bairro:</strong> {{ entrega.bairro }}</p>
+        <p><strong>Loja:</strong> {{ entrega.group }}</p>
+        <p><strong>Pagamento:</strong> {{ entrega.pagamento }}</p>
+        
+        {% if entrega.insucessos.all %}
+         <p><strong>Tentativas:</strong></p><br>
+            
+            {% for insucesso in entrega.insucessos.all|dictsortreversed:"hora_ins" %}
+                em {{ insucesso.hora_ins|date:"d/m/Y"}}
+                às {{ insucesso.hora_ins|time:"H:i" }}<br>
+            {% endfor %}
+            
+          </p>
+          {% endif %}
+      </div>
+      <div class="card-footer">
+        <a href="{% url 'entrega:remover' entrega.id %}" class="table-link">
+         Devolver para loja
+        </a>
+      </div>
+  </div>
+    {% endfor %}
+    <div style="width: 100%; text-align: center; margin-top: 2rem;">
+      <input type="submit" class="btn btn-link btn-route" align="center" value="Criar Rota">
+    </div>
+  </form>
+</div>
+<script src="{% static 'global/js/script.js' %}"></script>
+{% else %}
+<div class="single-card">
+  <h1>Entregas Finalizadas. <a href="{% url 'entrega:index_entrega' %}">Ver mais entregas</a></h1>
+</div>
+
+{% endif %}
+<script src="{% static 'global/js/script.js' %}"></script>
+<script>
+
+  document.addEventListener("DOMContentLoaded", function() {
+      function getLocation() {
+          if (navigator.geolocation) {
+              navigator.geolocation.getCurrentPosition(setPosition);
+          } else {
+              alert("A geolocalização não é suportada por este navegador.");
+          }
+      }
+  
+      function setPosition(position) {
+          let lat = position.coords.latitude;
+          let lng = position.coords.longitude;
+          document.getElementById("starting_point_lat").value = lat;
+          document.getElementById("starting_point_lng").value = lng;
+      }
+  
+      getLocation();
+  });
+
+
+  </script>
+{% endblock %}

@@ -1,0 +1,28 @@
+{% extends 'global/base_posto.html' %}
+{% load static %}
+{% block content %}
+
+<h2>Selecione um funcionário para iniciar a avaliação:</h2><br>
+
+<div class="user-list">
+    {% for usuario in usuarios %}
+        {% if usuario.foto %}
+            <a href="{% url 'posto:avaliar_usuario' usuario.id %}">
+                <div class="user-card">
+                    <img src="{{ usuario.foto.url }}" alt="{{ usuario }}" class="user-image">
+                    {{ usuario }}
+                </div>
+            </a>
+        {% else %}
+            <a href="{% url 'posto:avaliar_usuario' usuario.id %}">
+                <div class="user-card">
+                    <img src="{% static 'global/img/avatar.jpg' %}" alt="{{ usuario }}" class="user-image">
+                    {{ usuario }}
+                </div>
+            </a>
+        {% endif %}
+    {% endfor %}
+</div>
+
+{% endblock %}
+

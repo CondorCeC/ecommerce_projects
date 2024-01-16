@@ -1,0 +1,28 @@
+{% extends 'global/base_posto.html' %}
+{% load henningfilters %}
+
+{% block content %}
+
+<h2>Avaliação de {{ avaliacao.user_posto.user.username }} - ID {{avaliacao.id}}</h2>
+
+{% for subtopico, respostas in respostas_por_subtopico.items %}
+    <h3>{{ subtopico.nome }}</h3>
+    {% for resposta in respostas %}
+        <div>
+            <p><strong>Questão:</strong> {{ resposta.questao.texto }}</p>
+            <p><strong>Resposta:</strong> {{ resposta.get_resposta_display }}</p>
+        </div>
+    {% endfor %}
+    <div>
+       <p><strong>Média para {{ subtopico.nome }}:</strong> {{ medias_subtopicos|get_item:subtopico }}</p>
+</p>
+    </div>
+{% endfor %}
+<div>
+    <p><strong>Média Geral:</strong> {{ media_geral }}</p>
+</div>
+
+
+{% endblock %}
+
+

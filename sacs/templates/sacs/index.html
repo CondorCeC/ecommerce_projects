@@ -1,0 +1,163 @@
+{% extends 'global/base_sacs.html' %}
+
+{% block content %}
+{% if is_mobile %} <!-- Visualização para Mobile -->
+{% load static %}
+{% if page_obj %}
+{% if request.user.is_superuser %} <!-- Visualização para Mobile SuperUser -->
+   <h1 align="center">Sacs</h1> 
+    <div class="cards-container">
+      {% for contact in page_obj %}
+        <div class="card clickable-card" data-url="{% url 'contact:contact' contact.id %}">
+          <div class="card-header">
+              <strong>{{ contact.id }}</strong>
+          </div>
+            <div class="card-body">
+              <p><strong>Status:</strong> {{ contact.get_status_display }}</p>
+              <p><strong>Data Criação:</strong> {{ contact.created_date }}</p>
+              <p><strong>Pedido:</strong> {{ contact.last_name }}</p>
+              <p><strong>Tipo SAC:</strong> {{ contact.category.name }}</p>
+              <p><strong>Nome Cliente:</strong> {{ contact.first_name }}</p>
+              <p><strong>Loja:</strong> {{ contact.group }}</p>
+            </div>
+        </div>
+      {% endfor %}
+    </div>
+{% else %} <!-- Visualização para Mobile UserLoja -->
+<h1 align="center">Sacs</h1> 
+<div class="cards-container">
+    <div class="cards-container">
+      {% for contact in page_obj %}
+        <div class="card clickable-card" data-url="{% url 'contact:contact' contact.id %}">
+          <div class="card-header">
+              <strong>{{ contact.id }}</strong>
+          </div>
+            <div class="card-body">
+              <p><strong>Status:</strong> {{ contact.get_status_display }}</p>
+              <p><strong>Data Criação:</strong> {{ contact.created_date }}</p>
+              <p><strong>Loja:</strong> {{ contact.group }}</p>
+            </div>
+        </div>
+      {% endfor %}
+    </div>
+    </div>
+    </div>
+
+{% endif %}
+
+{% else %}
+  <div class="single-contact">
+    <h1 class="single-contact-name">
+      Nenhum SAC Encontrado. <a href="{% url 'contact:index' %}" class="btn btn-link btn-back">Voltar</a>
+    </h1>
+  </div>
+
+{% endif %}
+{% else %} <!-- Visualização Desktop -->
+{% if page_obj %}
+<div class="responsive-table">
+  {% if request.user.is_superuser %}<!-- Visualização Desktop SuperUser -->
+    <table class="contacts-tablesuper">
+        <caption class="table-caption ">
+          Sacs
+        </caption>
+      <thead>
+        <tr class="table-row table-row-header">
+          <th class="table-header">ID</th>
+          <th class="table-header">Status</th>
+          <th class="table-header">Data Criação</th>
+          <th class="table-header">Tipo Sac</th>
+          <th class="table-header">Nome Cliente</th>
+          <th class="table-header">Número Pedido</th>
+          <th class="table-header">Loja</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for contact in page_obj %}
+          <tr class="table-row">
+            <td class="table-cel">
+              <a class="table-link" href="{% url 'contact:contact' contact.id %}">
+                {{ contact.id }}
+              </a>
+            </td>
+            <td class="table-cel">
+              <b>{{ contact.get_status_display }}</b>
+            </td>
+            <td class="table-cel">
+              <b>{{ contact.created_date }}</b>
+            </td>
+            <td class="table-cel">
+              <b>{{ contact.category.name }}</b>
+            </td>
+            <td class="table-cel">
+              <b>{{ contact.first_name }}</b>
+            </td>
+            <td class="table-cel">
+              <b>{{ contact.last_name }}</b>
+            </td>
+            <td class="table-cel">
+              <b>{{ contact.group }}</b>
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+  {% else %}<!-- Visualização Desktop UserLoja -->
+    <table class="contacts-table">
+        <caption class="table-caption">
+          Sacs
+        </caption>
+      <thead>
+        <tr class="table-row table-row-header">
+          <th class="table-header">ID</th>
+          <th class="table-header">
+            <div class="form-group">
+              <form value="" name="q2" method="POST" action="{% url 'contact:search2' %}" >{% csrf_token %}
+                <select name="status" id="status" onchange="this.form.submit()">
+                  <option value="">Status</option>
+                  <option value="">Todos</option>
+                  <option value="Novo">Novo</option>
+                  <option value="Pendente">Pendente</option>
+                  <option value="Em atendimento">Em atendimento</option>
+                  <option value="Concluído">Concluído</option>
+                </select>
+              </form>
+            </div>
+          </th>
+          <th class="table-header">Tipo Sac</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for contact in page_obj %}
+          <tr class="table-row">
+            <td class="table-cel">
+              {% if contact.status == 'Concluído' or contact.status == 'Em atendimento'%}
+                <a class="table-link" href="{% url 'contact:contact' contact.id %}">
+                  {{ contact.id }}
+                </a>
+              {% else %}
+                <a class="table-link" href="{% url 'contact:iniciar' contact.id %}">
+                  {{ contact.id }}
+                </a>
+              {% endif %}
+            </td>
+            <td class="table-cel">
+              <b>{{ contact.get_status_display }}</b>
+            </td>
+            <td class="table-cel">
+              <b>{{ contact.category.name }}</b>
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    {% endif %}
+  </table>
+</div>
+{% else %} <!-- Do pageObject-->
+<div class="single-contact">
+  <h1 class="single-contact-name">
+    Nenhum SAC Encontrado. <a href="{% url 'contact:index' %}" class="btn btn-link btn-back">Voltar</a>
+  </h1>
+</div>
+{% endif %}
+{% endif %}
+{% endblock content %}

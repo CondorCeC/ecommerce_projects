@@ -1,0 +1,30 @@
+{% extends 'global/base_posto.html' %}
+{% load static %}
+{% block content %}
+<h2>Avaliações Realizadas</h2>
+<div class="user-list">
+  {% if error_message %}
+  <p>{{ error_message }}</p>
+  {% else %}
+{% for avaliacao in avaliacoes %}
+    <div class="user-card">
+
+  {% if usuario.foto %}
+   <img src="{{ usuario.foto.url }}" alt="{{ usuario }}" class="user-image">
+   {% else %}
+        <img src="{% static 'global/img/avatar.jpg' %}" alt="{{ usuario }}" class="user-image">
+      {% endif %}  
+        <div> 
+            <h3>{{ avaliacao.user_posto.user.username }} - ID {{avaliacao.id}}</h3>
+            <p>Cargo: {{ avaliacao.user_posto.cargo }}</p>
+            <a href="{% url 'posto:ver_avaliacao' avaliacao.id %}">
+            Ver mais <i class="fa-solid fa-magnifying-glass-plus"></i></i></i></a>
+        </div>  
+    </div>
+{% endfor %}
+{% endif %}
+{% if cargo_usuario_logado == 'Coordenador' %}
+    <a href="{% url 'posto:exportar_avaliacoes_excel' %}" class="btn btn-primary">Exportar Avaliações para Excel</a>
+{% endif %}
+</div>
+{% endblock %}

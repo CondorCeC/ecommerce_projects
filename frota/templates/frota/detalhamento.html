@@ -1,0 +1,160 @@
+{% extends 'global/base_sacs.html' %}
+{% block header %}
+    {% include 'global/partials/_header_frota.html' %}
+{% endblock %}
+{% load static %}
+{% block content %}
+<h2>Entregas realizadas {{ request.user.username }}</h2>
+<form method="get">
+  
+<label for="filter_driver">Motorista:</label><br>
+<select name="filter_driver" id="filter_driver" onchange="this.form.submit()">
+    <option value="" {% if not filter_driver_id %}selected{% endif %}>Todos</option>
+    {% for driver in all_drivers %}
+        <option value="{{ driver.id }}" {% if filter_driver_id == driver.id|stringformat:"s" %}selected{% endif %}>{{ driver.username }}</option>
+    {% endfor %}
+</select><br>
+
+<label for="filter_store">Loja:</label><br>
+<select name="filter_store" id="filter_store" onchange="this.form.submit()">
+    <option value="" {% if not filter_store_id %}selected{% endif %}>Todas</option>
+    {% for store in all_stores %}
+        <option value="{{ store.id }}" {% if filter_store_id == store.id|stringformat:"s" %}selected{% endif %}>{{ store.name }}</option>
+    {% endfor %}
+</select><br>
+<label for="start_date">Início:</label>
+<input type="date" name="start_date" id="start_date" onchange="this.form.submit()" 
+       value="{{ request.GET.start_date|default:'' }}">
+
+<label for="end_date">Fim:</label>
+<input type="date" name="end_date" id="end_date" onchange="this.form.submit()" 
+       value="{{ request.GET.end_date|default:'' }}">
+
+</form>
+<form method="post" action="{% url 'entrega:export_to_excel' %}">{% csrf_token %}
+<div class="responsive-table">
+
+<table border="1">
+    <thead>
+        <tr>
+            <th><input type="checkbox" id="selectAllCheckbox" style="margin-right: 10px;"/></th>
+            <th>Contagem</th>
+            <th>ID Entrega</th>
+            <th>Pedido</th>
+            <th>Tipo</th>
+            <th>Data</th>
+            <th>Motorista</th>
+            <th>Loja</th>
+        </tr>
+    </thead>
+    <tbody>
+    {% for log in logs_entrega %}
+        <tr>
+            <td><input type="checkbox" name="selected_logs" value="{{ log.id }}"></td>
+            <td>{{ forloop.counter }}</td>
+            <td>{{ log.entrega.id }}</td>
+            <td>{{ log.entrega.numero_pedido }}</td>
+            <td>
+                {% if "Finalizou a entrega em" in log.action %}
+                    Entrega
+                {% else %}
+                    Reentrega
+                {% endif %}
+            </td>
+            <td>{{ log.timestamp }}</td>
+            <td>{{ log.entrega.owner }}</td>
+            <td>{{ log.entrega.group }}</td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+</div>
+<button type="submit" class="btn btn-link">Exportar Dados</button>
+</form>
+
+
+<script>
+document.getElementById("selectAllCheckbox").addEventListener("change", function() {
+    var checkboxes = document.querySelectorAll("input[name='selected_logs']");
+    for (var i = 0; i < checkboxes.length; i++) {
+        checkboxes[i].checked = this.checked;
+    }
+});
+</script>
+<style>
+.responsive-table {
+    overflow-x: auto;
+}
+
+/* Estilos para a tabela */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+    font-size: 16px;
+    text-align: left;
+}
+
+th, td {
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+}
+
+/* Estilos para o cabeçalho */
+thead {
+    background-color: #2C3E50;
+    color: white;
+}
+
+thead th {
+    text-transform: uppercase;
+}
+
+/* Estilos para as linhas (zebra-striping) */
+tbody tr:nth-child(even) {
+    background-color: #f2f2f2;
+}
+
+/* Estilo para o hover */
+tbody tr:hover {
+    background-color: #f5f5f5;
+}
+
+/* Media query para telas menores que 350px */
+@media only screen and (max-width: 350px) {
+    .responsive-table {
+        overflow-x: scroll;
+    }
+}
+
+
+label {
+    font-size: 16px;
+    margin-right: 10px;
+    font-weight: bold;
+    color: #333;
+}
+
+/* Estilo para os selects */
+select {
+    font-size: 16px;
+    padding: 5px 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: #f9f9f9;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.2s;
+}
+
+select:hover {
+    background-color: #f5f5f5;
+}
+
+select:focus {
+    outline: none;
+    border-color: #007bff;
+    background-color: #e5e5e5;
+}
+</style>
+{% endblock %}
+
